@@ -1,5 +1,5 @@
-﻿using FreshPager.Data.Marshal;
 using System.Text.Json;
+using UptimePager.Data.Marshal;
 
 namespace Tests;
 

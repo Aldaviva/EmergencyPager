@@ -1,6 +1,3 @@
-using FreshPager;
-using FreshPager.API;
-using FreshPager.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -14,6 +11,8 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using UptimePager.API;
+using UptimePager.Data;
 
 namespace Tests;
 

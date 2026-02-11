@@ -1,5 +1,5 @@
-using FreshPager.Data;
 using System.Text.Json;
+using UptimePager.Data;
 
 namespace Tests;
 
@@ -113,19 +113,19 @@ public class FreshpingWebhookPayloadTest {
     public void eventFilters(string webhookType, FreshpingWebhookPayload.EventFilter expected) {
         string payload =
             $$"""
-              {
-                  "event_data": {
-                      "webhook_type": "{{webhookType}}",
-                      "org_name": "a"
-                  },
-                  "text": "a",
-                  "check_name": "a",
-                  "check_url": "a",
-                  "request_location": "a",
-                  "response_summary": "a",
-                  "response_state": "a"
-              }
-              """;
+            {
+                "event_data": {
+                    "webhook_type": "{{webhookType}}",
+                    "org_name": "a"
+                },
+                "text": "a",
+                "check_name": "a",
+                "check_url": "a",
+                "request_location": "a",
+                "response_summary": "a",
+                "response_state": "a"
+            }
+            """;
         JsonSerializer.Deserialize<FreshpingWebhookPayload>(payload)?.eventFilter.Should().Be(expected);
     }
 
