@@ -1,0 +1,19 @@
+# Copy this file to /etc/systemd/system/
+#
+# Install:           sudo systemctl daemon-reload
+# Enable auto-start: sudo systemctl enable emergencypager.service
+# Start:             sudo systemctl start emergencypager.service
+# Check status:      systemctl status emergencypager.service
+# Read logs:         journalctl -f -u emergencypager.service
+
+[Unit]
+Description=EmergencyPager
+
+[Service]
+Type=notify
+ExecStart=/opt/emergencypager/emergencypager
+WorkingDirectory=/opt/emergencypager/
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

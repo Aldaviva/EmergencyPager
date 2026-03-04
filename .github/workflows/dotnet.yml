@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     env:
-      ProjectName: UptimePager
+      ProjectName: EmergencyPager
 
     strategy:
       matrix:
@@ -34,7 +34,7 @@ jobs:
 
     steps:
     - name: Clone
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Initialize test reporting
       uses: testspace-com/setup-testspace@v1
@@ -54,8 +54,8 @@ jobs:
     - name: Publish Windows toasts client
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        dotnet restore UptimePager.Toast --locked-mode
-        dotnet publish UptimePager.Toast --no-restore --framework net10.0-windows10.0.17763.0 --runtime ${{ matrix.TargetPlatform }} --configuration Release --no-self-contained -p:PublishSingleFile=true
+        dotnet restore EmergencyPager.Toast --locked-mode
+        dotnet publish EmergencyPager.Toast --no-restore --framework net10.0-windows10.0.17763.0 --runtime ${{ matrix.TargetPlatform }} --configuration Release --no-self-contained -p:PublishSingleFile=true
 
     - name: Test
       shell: bash
@@ -84,23 +84,23 @@ jobs:
       run: exit ${{ env.TEST_EXIT_CODE }}
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ env.ProjectName }}-${{ matrix.TargetPlatform }}
         path: |
-          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/UptimePager.exe
-          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/uptimepager
+          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/EmergencyPager.exe
+          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/emergencypager
           ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/appsettings.json
           ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/Install service.ps1
-          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/uptimepager.service
+          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/emergencypager.service
         if-no-files-found: error
 
     - name: Upload Windows toasts client build artifacts
       if: ${{ matrix.os == 'windows-latest' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
-        name: UptimePager.Toast-${{ matrix.TargetPlatform }}
+        name: EmergencyPager.Toast-${{ matrix.TargetPlatform }}
         path: |
-          UptimePager.Toast/bin/Release/net10.0-windows10.0.17763.0/${{ matrix.TargetPlatform }}/publish/UptimePager.Toast.exe
-          UptimePager.Toast/bin/Release/net10.0-windows10.0.17763.0/${{ matrix.TargetPlatform }}/publish/appsettings.json
+          EmergencyPager.Toast/bin/Release/net10.0-windows10.0.17763.0/${{ matrix.TargetPlatform }}/publish/EmergencyPager.Toast.exe
+          EmergencyPager.Toast/bin/Release/net10.0-windows10.0.17763.0/${{ matrix.TargetPlatform }}/publish/appsettings.json
         if-no-files-found: error
