@@ -56,9 +56,9 @@
       },
       "SignalRClientGenerator": {
         "type": "Direct",
-        "requested": "[0.0.8, )",
-        "resolved": "0.0.8",
-        "contentHash": "8hlFQ9cmt21hI45ZuLFDa1Mz1VKqikLv+JdGb1M53EUXiExzNjCJs5hoclEgjDIpKwIyFNCkms9RQ4xHFbt56g==",
+        "requested": "[0.0.9, )",
+        "resolved": "0.0.9",
+        "contentHash": "y6thqtoPT1qPTRY21h1XPefFYl3vnj5N6CXcXt9Z3LkHVrfcjsZRLW5REU1nZ/dVwoMJynKbjfsfwMe7PAHJMA==",
         "dependencies": {
           "Microsoft.AspNetCore.SignalR.Client": "8.0.24"
         }
@@ -89,12 +89,12 @@
       },
       "Unfucked.HTTP": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.22, )",
-        "resolved": "0.0.1-beta.22",
-        "contentHash": "q6/22H0aX1M+plHpMqHd69TMg/p8Ekft+uW5QsPAK+jamiflNQqLLcQrQwZIH34j0CEk16/4jEDhILlCvEPpYA==",
+        "requested": "[0.0.1-beta.24, )",
+        "resolved": "0.0.1-beta.24",
+        "contentHash": "PsAhJyNUILNzqOXp+c526TzX9sl63LO375uhRgov/x1yE7ncwFEfA74MJCSijvj1i/v3hQ90N2V3+c47LPnT8g==",
         "dependencies": {
           "System.Text.Json": "8.0.6",
-          "Unfucked": "0.0.1-beta.29"
+          "Unfucked": "0.0.1-beta.31"
         }
       },
       "Microsoft.AspNetCore.Connections.Abstractions": {
@@ -474,8 +474,8 @@
       },
       "Unfucked": {
         "type": "Transitive",
-        "resolved": "0.0.1-beta.29",
-        "contentHash": "BwvicbiYbdSx5FJOorXfng+uidzpoCa49uLNPP6/X8bJHJA8gqbo6FvQruDYrXVX9395jPWPmcha2RjfYI2sGQ=="
+        "resolved": "0.0.1-beta.31",
+        "contentHash": "9+AWHhH2Bv6ZE8DY2Mt09tvX8nJfqolrGV/J+5x5zDOHqqX7iudNjiLnC6wguUnv26w5WL6HM+JU2jR7oABazw=="
       },
       "uptimepager.common": {
         "type": "Project",
