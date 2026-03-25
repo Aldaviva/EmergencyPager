@@ -40,7 +40,7 @@
         <PackageReference Include="PagerDuty.Webhooks" Version="1.2.0-beta5" />
         <PackageReference Include="RuntimeUpgradeNotifier" Version="1.1.0" />
         <PackageReference Include="Unfucked.DI" Version="0.0.1-beta.12" />
-        <PackageReference Include="Unfucked.HTTP" Version="0.0.1-beta.24" />
+        <PackageReference Include="Unfucked.HTTP" Version="0.0.1-beta.26" />
     </ItemGroup>
 
     <ItemGroup>
