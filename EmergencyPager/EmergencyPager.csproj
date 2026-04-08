@@ -33,7 +33,7 @@
 
     <ItemGroup>
         <PackageReference Include="Bom.Squad" Version="0.3.0" />
-        <PackageReference Include="IPNetwork2" Version="3.4.853" />
+        <PackageReference Include="IPNetwork2" Version="4.2.0" />
         <PackageReference Include="Kasa" Version="1.1.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="10.0.3" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.3" />
