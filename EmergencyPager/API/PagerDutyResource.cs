@@ -14,7 +14,7 @@ public sealed class PagerDutyResource(
     ILogger<PagerDutyResource> logger
 ): WebResource {
 
-    private readonly ConcurrentDictionary<string, ValueHolder<uint>> triggeredIncidentCountByOutletId = Enumerables.CreateConcurrentDictionary<string, uint>();
+    private readonly ConcurrentDictionary<string, ValueHolder<int>> triggeredIncidentCountByOutletId = Enumerables.CreateConcurrentDictionary<string, int>();
 
     public void map(IEndpointRouteBuilder webapp) {
         webhookResource.IncidentReceived += async (_, incident) => await onIncidentReceived(incident);
@@ -31,10 +31,14 @@ public sealed class PagerDutyResource(
             foreach (KasaController kasaController in kasaControllerFactory(pagerdutySubdomain)) {
                 using (kasaController) {
                     string incidentCountKey = kasaController.id;
-                    triggeredIncidentCountByOutletId.TryAdd(incidentCountKey, new ValueHolder<uint>(0));
-                    uint triggeredIncidentCountForOutlet = (isTriggered
+                    triggeredIncidentCountByOutletId.TryAdd(incidentCountKey, new ValueHolder<int>(0));
+                    int triggeredIncidentCountForOutlet = (isTriggered
                         ? triggeredIncidentCountByOutletId.AtomicIncrement(incidentCountKey)
                         : triggeredIncidentCountByOutletId.AtomicDecrement(incidentCountKey))!.Value;
+                    if (triggeredIncidentCountForOutlet < 0) {
+                        // If this program was restarted during an outage, the triggered incident count can go from 0 to negative when an incident is resolved, so set it back to 0.
+                        triggeredIncidentCountByOutletId.AtomicAdd(incidentCountKey, -triggeredIncidentCountForOutlet);
+                    }
                     bool turnOn = triggeredIncidentCountForOutlet != 0;
 
                     if (isTriggered || !turnOn) {
