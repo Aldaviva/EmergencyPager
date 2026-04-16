@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFrameworks>net10.0-windows;net10.0</TargetFrameworks>
-        <!-- <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm;linux-arm64</RuntimeIdentifiers> -->
+        <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers> <!-- Linux RIDs are conditionally appended below to fix a build failure -->
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -24,6 +24,10 @@
         <AssemblyName>$(AssemblyName.ToLower())</AssemblyName>
     </PropertyGroup>
 
+    <PropertyGroup Condition="!$(TargetFramework.Contains('-windows'))">
+        <RuntimeIdentifiers>$(RuntimeIdentifiers);linux-x64;linux-arm;linux-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+    
     <ItemGroup>
         <AdditionalFiles Include="ExceptionAdjustments.txt" />
         <Content Include="pagerduty.ico" />
