@@ -34,8 +34,8 @@
         <PackageReference Include="RuntimeUpgradeNotifier" Version="1.1.0" />
         <PackageReference Include="SignalRClientGenerator" Version="0.0.10" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta6" />
-        <PackageReference Include="Unfucked.DI" Version="0.0.1-beta.15" />
-        <PackageReference Include="Unfucked.HTTP" Version="0.0.1-beta.29" />
+        <PackageReference Include="Unfucked.DI" Version="0.0.1-beta.16" />
+        <PackageReference Include="Unfucked.HTTP" Version="0.0.1-beta.30" />
     </ItemGroup>
     
     <ItemGroup Label="Upgraded transitive dependencies">

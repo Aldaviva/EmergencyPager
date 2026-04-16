@@ -12,6 +12,7 @@ using System.Text.Json.Serialization;
 using Options = Kasa.Options;
 
 BomSquad.DefuseUtf8Bom();
+Version.GetProgramVersion(true);
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -53,3 +54,4 @@ using RuntimeUpgradeNotifier runtimeUpgrades = new() {
 };
 
 await webapp.RunAsync();
+return 0;

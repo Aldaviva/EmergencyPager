@@ -87,20 +87,20 @@
       },
       "Unfucked.DI": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.15, )",
-        "resolved": "0.0.1-beta.15",
-        "contentHash": "YGVRvCGObYBHgXXwRu/tKfzT+yvBzu3FjxfgT4N6gqFByVkVW+QkKWMKE+nKmpuwu6Tphj2lOQ6kERWwHXoc1Q==",
+        "requested": "[0.0.1-beta.16, )",
+        "resolved": "0.0.1-beta.16",
+        "contentHash": "HvPaEc/Vsd111hcvl9Pv/6nrJt6XZjvKG2WKpoYHM+/vB56ykWAsjf2pn2Lewj/ZWBOEi/iMSKMLD9YZEuNlWg==",
         "dependencies": {
-          "Unfucked": "0.0.1-beta.38"
+          "Unfucked": "0.0.1-beta.40"
         }
       },
       "Unfucked.HTTP": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.29, )",
-        "resolved": "0.0.1-beta.29",
-        "contentHash": "PAxAlZesoDFwjgORomT2iDcJZKihFfIJisYz+cEjWXYXNBuy+YdbIqvo9720LJ2OCkKUBQzxXfh6EfffifKQRg==",
+        "requested": "[0.0.1-beta.30, )",
+        "resolved": "0.0.1-beta.30",
+        "contentHash": "fxy4YbkQuKMopnRaPdwMT3y2jDzz0okL/Ia+4yXbNKChDn2rLxS0Fe8rIIjDGBNLlfOW/zWcc9v0t7bxf3jHTw==",
         "dependencies": {
-          "Unfucked": "0.0.1-beta.38"
+          "Unfucked": "0.0.1-beta.40"
         }
       },
       "Microsoft.AspNetCore.Connections.Abstractions": {
@@ -450,8 +450,8 @@
       },
       "Unfucked": {
         "type": "Transitive",
-        "resolved": "0.0.1-beta.38",
-        "contentHash": "kubqp2LfAyeKSwsLbq+qXPssbGNUzjVICfDqbPf9LgO50a/TM8KfQnxBxkZo8YoUksII0avp1NJAZoosChGk9w=="
+        "resolved": "0.0.1-beta.40",
+        "contentHash": "9V3WIbszgP5JPkbeoy3N5kA3WRqnXLXNV0Zi4X/LO0gW/uCrTar7714juleFVaE2KWPtrS5Me245PprN86Vy/A=="
       },
       "emergencypager.common": {
         "type": "Project",
