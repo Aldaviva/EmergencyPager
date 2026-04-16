@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFrameworks>net10.0-windows;net10.0</TargetFrameworks>
-        <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers> <!-- Linux RIDs are conditionally appended below to fix a build failure -->
+        <TargetFramework>net10.0</TargetFramework>
+        <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm;linux-arm64</RuntimeIdentifiers>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -22,10 +22,6 @@
 
     <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
         <AssemblyName>$(AssemblyName.ToLower())</AssemblyName>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="!$(TargetFramework.Contains('-windows'))">
-        <RuntimeIdentifiers>$(RuntimeIdentifiers);linux-x64;linux-arm;linux-arm64</RuntimeIdentifiers>
     </PropertyGroup>
     
     <ItemGroup>
@@ -52,11 +48,11 @@
     </ItemGroup>
 
     <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
-        <None Update="Install service.ps1" CopyToOutputDirectory="Always" />
+        <None Update="Install service.ps1" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
-        <None Update="$(AssemblyName).service" CopyToOutputDirectory="Always" />
+        <None Update="$(AssemblyName).service" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <Import Project="providedDependencies.g.props" />

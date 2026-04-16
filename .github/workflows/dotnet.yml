@@ -14,19 +14,15 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            targetRuntime: net10.0
             targetPlatform: linux-x64
             skipTests: false
           - os: ubuntu-latest
-            targetRuntime: net10.0
             targetPlatform: linux-arm
             skipTests: true
           - os: ubuntu-latest
-            targetRuntime: net10.0
             targetPlatform: linux-arm64
             skipTests: true
           - os: windows-latest
-            targetRuntime: net10.0-windows
             targetPlatform: win-x64
             skipTests: false
 
@@ -46,23 +42,23 @@ jobs:
       run: dotnet restore ${{ env.ProjectName }} --locked-mode
 
     - name: Build
-      run: dotnet build ${{ env.ProjectName }} --no-restore --framework ${{ matrix.targetRuntime }} --runtime ${{ matrix.TargetPlatform }} --configuration Release --no-self-contained
+      run: dotnet build ${{ env.ProjectName }} --no-restore --runtime ${{ matrix.TargetPlatform }} --configuration Release --no-self-contained
 
     - name: Publish
-      run: dotnet publish ${{ env.ProjectName }} --no-build --framework ${{ matrix.targetRuntime }} --runtime ${{ matrix.TargetPlatform }} --configuration Release --no-self-contained -p:PublishSingleFile=true
+      run: dotnet publish ${{ env.ProjectName }} --no-build --runtime ${{ matrix.TargetPlatform }} --configuration Release --no-self-contained -p:PublishSingleFile=true
 
     - name: Publish Windows toasts client
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
         dotnet restore EmergencyPager.Toast --locked-mode
-        dotnet publish EmergencyPager.Toast --no-restore --framework net10.0-windows10.0.17763.0 --runtime ${{ matrix.TargetPlatform }} --configuration Release --no-self-contained -p:PublishSingleFile=true
+        dotnet publish EmergencyPager.Toast --no-restore --runtime ${{ matrix.TargetPlatform }} --configuration Release --no-self-contained -p:PublishSingleFile=true
 
     - name: Test
       shell: bash
       if: ${{ !matrix.skipTests }}
       run: |
         testExitCode=0
-        dotnet test Tests --framework ${{ matrix.targetRuntime }} --runtime ${{ matrix.targetPlatform }} --configuration Release --collect:"XPlat Code Coverage" --settings Tests/Tests.runsettings --logger "trx;LogFileName=TestResults.xml" || testExitCode=$?
+        dotnet test Tests --runtime ${{ matrix.targetPlatform }} --configuration Release --collect:"XPlat Code Coverage" --settings Tests/Tests.runsettings --logger "trx;LogFileName=TestResults.xml" || testExitCode=$?
         echo "TEST_EXIT_CODE=$testExitCode" >> $GITHUB_ENV
         cp Tests/TestResults/*/coverage.info Tests/TestResults
         exit 0
@@ -88,11 +84,11 @@ jobs:
       with:
         name: ${{ env.ProjectName }}-${{ matrix.TargetPlatform }}
         path: |
-          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/EmergencyPager.exe
-          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/emergencypager
-          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/appsettings.json
-          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/Install service.ps1
-          ${{ env.ProjectName }}/bin/Release/${{ matrix.TargetRuntime }}/${{ matrix.TargetPlatform }}/publish/emergencypager.service
+          ${{ env.ProjectName }}/bin/Release/net10.0/${{ matrix.TargetPlatform }}/publish/EmergencyPager.exe
+          ${{ env.ProjectName }}/bin/Release/net10.0/${{ matrix.TargetPlatform }}/publish/emergencypager
+          ${{ env.ProjectName }}/bin/Release/net10.0/${{ matrix.TargetPlatform }}/publish/appsettings.json
+          ${{ env.ProjectName }}/bin/Release/net10.0/${{ matrix.TargetPlatform }}/publish/Install service.ps1
+          ${{ env.ProjectName }}/bin/Release/net10.0/${{ matrix.TargetPlatform }}/publish/emergencypager.service
         if-no-files-found: error
 
     - name: Upload Windows toasts client build artifacts
