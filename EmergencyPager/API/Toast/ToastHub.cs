@@ -4,7 +4,7 @@ using System.Net;
 
 namespace EmergencyPager.API.Toast;
 
-public class ToastHub(ILogger<ToastHub> logger): Hub<EventsFromHub> {
+public sealed class ToastHub(ILogger<ToastHub> logger): Hub<EventsFromHub> {
 
     private static readonly IReadOnlyList<IPNetwork2> CLIENT_IP_ADDRESS_WHITELIST = [
         ..IPNetwork2.ParseRange("::ffff:192.168.1.2-::ffff:192.168.1.254"),

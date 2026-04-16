@@ -1,6 +1,6 @@
 namespace EmergencyPager.Data;
 
-public class Configuration {
+public sealed class Configuration {
 
     public IReadOnlyList<string>? pagerDutyWebhookSecrets { get; init; }
 

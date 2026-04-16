@@ -22,7 +22,7 @@ public interface ToastHandler {
 /*
  * https://learn.microsoft.com/en-us/windows/apps/develop/notifications/app-notifications/send-local-toast?tabs=desktop
  */
-public class ToastHandlerImpl(PagerDutyRestClientFactory pagerDutyClientFactory, IOptions<Configuration> config, ILogger<ToastHandlerImpl> logger): ToastHandler {
+public sealed class ToastHandlerImpl(PagerDutyRestClientFactory pagerDutyClientFactory, IOptions<Configuration> config, ILogger<ToastHandlerImpl> logger): ToastHandler {
 
     private const string TOAST_ARG_INCIDENT_ID       = "incidentId";
     private const string TOAST_ARG_ACCOUNT_SUBDOMAIN = "accountSubdomain";

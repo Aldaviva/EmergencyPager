@@ -1,6 +1,6 @@
 namespace EmergencyPager.Toast.Data;
 
-public class Configuration {
+public sealed class Configuration {
 
     public required Uri hubAddress { get; init; }
     public required IReadOnlyDictionary<string, PagerDutyAccount> pagerDutyAccountsBySubdomain { get; init; }

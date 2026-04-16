@@ -4,7 +4,6 @@ using EmergencyPager.API.Toast;
 using EmergencyPager.Data;
 using Kasa;
 using Microsoft.Extensions.Options;
-using Pager.Duty;
 using Pager.Duty.Webhooks;
 using RuntimeUpgrade.Notifier;
 using RuntimeUpgrade.Notifier.Data;
@@ -22,21 +21,16 @@ builder.Host
 
 builder.Services
     .Configure<Configuration>(builder.Configuration, options => options.BindNonPublicProperties = true)
-    .AddSingleton<PagerDutyFactory>(provider => key => new PagerDuty(key) { HttpClient = provider.GetRequiredService<HttpClient>() })
     .AddSingleton<KasaControllerFactory>(provider => {
         IReadOnlyDictionary<string, IReadOnlyList<string>>? alarmLightUrlsByPagerDutySubdomain =
             provider.GetRequiredService<IOptions<Configuration>>().Value.alarmLightUrlsByPagerDutySubdomain;
         Options kasaOptions = new() { LoggerFactory = provider.GetService<ILoggerFactory>() };
         return pagerdutySubdomain => alarmLightUrlsByPagerDutySubdomain?.GetValueOrDefault(pagerdutySubdomain)?
-            .Select<string, KasaController>(url => {
-                Uri    uri      = new(url, UriKind.Absolute);
-                string hostname = uri.Host;
-                return uri.Segments.ElementAtOrDefault(1) is {} s && int.TryParse(s.TrimEnd('/'), out int socketId)
-                    ? new KasaMultiOutletController(new MultiSocketKasaOutlet(hostname, kasaOptions), socketId)
-                    : new KasaSingleOutletController(new KasaOutlet(hostname, kasaOptions));
-            }) ?? [];
+            .Select<string, KasaController>(url => new Uri(url, UriKind.Absolute) is var uri && uri.Segments.ElementAtOrDefault(1) is {} s && int.TryParse(s.TrimEnd('/'), out int socketId)
+                ? new KasaMultiOutletController(new MultiSocketKasaOutlet(uri.Host, kasaOptions), socketId)
+                : new KasaSingleOutletController(new KasaOutlet(uri.Host, kasaOptions))) ?? [];
     })
-    .AddSingleton<WebhookResource>(provider => new WebhookResource(provider.GetRequiredService<IOptions<Configuration>>().Value.pagerDutyWebhookSecrets ?? []))
+    .AddSingleton<IWebhookResource>(provider => new WebhookResource(provider.GetRequiredService<IOptions<Configuration>>().Value.pagerDutyWebhookSecrets ?? []))
     .AddHttpClient()
     .AddSingleton<WebResource, PagerDutyResource>()
     .AddSingleton<WebResource, ToastResource>()

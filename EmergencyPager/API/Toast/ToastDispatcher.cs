@@ -6,7 +6,7 @@ namespace EmergencyPager.API.Toast;
 
 public interface ToastDispatcher: EventsFromHub;
 
-public class ToastDispatcherImpl(IHubContext<ToastHub, EventsFromHub> toastHub): ToastDispatcher {
+public sealed class ToastDispatcherImpl(IHubContext<ToastHub, EventsFromHub> toastHub): ToastDispatcher {
 
     public Task incidentUpdated(IncidentWebhookPayload incident) => toastHub.Clients.All.incidentUpdated(incident);
 

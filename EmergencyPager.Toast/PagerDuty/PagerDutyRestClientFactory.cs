@@ -17,7 +17,7 @@ public interface PagerDutyRestClientFactory {
  * https://developer.pagerduty.com/docs/rest-api-overview
  * https://developer.pagerduty.com/docs/authentication
  */
-public class PagerDutyRestClientFactoryImpl(HttpClient http): PagerDutyRestClientFactory {
+public sealed class PagerDutyRestClientFactoryImpl(HttpClient http): PagerDutyRestClientFactory {
 
     private static readonly Uri PAGERDUTY_API_BASE = new("https://api.pagerduty.com");
 
@@ -30,6 +30,6 @@ public class PagerDutyRestClientFactoryImpl(HttpClient http): PagerDutyRestClien
         .Property(PropertyKey.JsonSerializerOptions, JSON_OPTIONS)
         .Authorization($"Token token={account.apiAccessKey}")
         .Accept(MediaTypeNames.Application.Json)
-        .Header(HttpHeaders.FROM, account.userEmailAddress);
+        .Header(HttpHeaders.From, account.userEmailAddress);
 
 }

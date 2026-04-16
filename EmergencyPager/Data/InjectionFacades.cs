@@ -1,9 +1,6 @@
 using Kasa;
-using Pager.Duty;
 
 namespace EmergencyPager.Data;
-
-internal delegate IPagerDuty PagerDutyFactory(string integrationKey);
 
 public delegate IEnumerable<KasaController> KasaControllerFactory(string pagerdutySubdomain);
 
@@ -19,14 +16,14 @@ public abstract class KasaController: IDisposable {
 
 }
 
-internal class KasaSingleOutletController(IKasaOutlet outlet): KasaController {
+internal sealed class KasaSingleOutletController(IKasaOutlet outlet): KasaController {
 
     public override string id { get; } = outlet.Hostname;
     public override IKasaOutlet outlet { get; } = outlet;
 
 }
 
-internal class KasaMultiOutletController(IMultiSocketKasaOutlet outlet, int socket): KasaController {
+internal sealed class KasaMultiOutletController(IMultiSocketKasaOutlet outlet, int socket): KasaController {
 
     public override string id { get; } = $"{outlet.Hostname}:{socket}";
     public override IMultiSocketKasaOutlet outlet { get; } = outlet;

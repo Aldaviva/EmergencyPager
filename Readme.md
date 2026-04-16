@@ -13,14 +13,14 @@ When an alert is triggered in [PagerDuty](https://www.pagerduty.com), turn on [K
 <!-- MarkdownTOC autolink="true" bracket="round" autoanchor="false" levels="1,2,3,4" bullets="-,1.,-,-" -->
 
 - [Prerequisites](#prerequisites)
-- [PagerDuty Incidents → spinning red light](#pagerduty-incidents-%E2%86%92-spinning-red-light)
+- [📟 PagerDuty Incidents → 🚨 Spinning Red Light](#%F0%9F%93%9F-pagerduty-incidents-%E2%86%92-%F0%9F%9A%A8-spinning-red-light)
     1. [Installation](#installation)
     1. [Configuration](#configuration)
         - [Procedure](#procedure)
         - [Options](#options)
     1. [Execution](#execution)
     1. [Signal Flow](#signal-flow)
-- [PagerDuty Incidents → Desktop Push Notifications](#pagerduty-incidents-%E2%86%92-desktop-push-notifications)
+- [📟 PagerDuty Incidents → 🍞 Desktop Push Notifications](#%F0%9F%93%9F-pagerduty-incidents-%E2%86%92-%F0%9F%8D%9E-desktop-push-notifications)
     1. [Installation](#installation-1)
     1. [Configuration](#configuration-1)
     1. [Execution](#execution-1)
@@ -31,9 +31,9 @@ When an alert is triggered in [PagerDuty](https://www.pagerduty.com), turn on [K
 - [ASP.NET Core Runtime 10 or later](https://dotnet.microsoft.com/en-us/download)
 - [PagerDuty account](https://www.pagerduty.com/sign-up/) (the [free plan](https://www.pagerduty.com/sign-up-free/?type=free) is sufficient)
 - [Kasa smart outlet](https://www.kasasmart.com/us/products/smart-plugs), such as the [EP10](https://www.kasasmart.com/us/products/smart-plugs/kasa-smart-plug-mini-ep10)
-- Ability to listen on a public WAN TCP port for incoming HTTP requests from PagerDuty without being blocked by a NAT or firewall
+- Ability to listen on a public WAN TCP port for incoming HTTP requests from PagerDuty, without being blocked by a NAT or firewall
 
-## PagerDuty Incidents → spinning red light
+## 📟 PagerDuty Incidents → 🚨 Spinning Red Light
 
 ### Installation
 1. Download the ZIP file for your operating system and CPU architecture from the [latest release page](https://github.com/Aldaviva/EmergencyPager/releases/latest).
@@ -60,39 +60,33 @@ When an alert is triggered in [PagerDuty](https://www.pagerduty.com), turn on [K
     1. Choose whether events should be fired for all Services in your account, or just one Service.
     1. Choose which Events should be fired, such as `incident.acknowledged`, `incident.escalated`, `incident.reassigned`, `incident.reopened`, `incident.resolved`, `incident.triggered`, and `incident.unacknowledged`
     1. Click **Add Webhook**.
-    1. Copy the Signing Secret to the `pagerDutyWebhookSecrets` array in the `appsettings.json` configuration file.
-1. Specify the smart outlets to turn on when PagerDuty incidents are triggered.
-    1. In `appsettings.json`, add a new key-value pair to the `alarmLightUrlsByPagerDutySubdomain` property.
-        - The key is the PagerDuty organization subdomain, also known as company name. For example, if your PagerDuty web admin UI URL is `https://mycompany.pagerduty.com`, then set this key to `mycompany`.
-        - The value is an array of one or more URLs representing Kasa smart outlets. The hostname is the IP address or domain name of your outlet, and the optional path is an integer specifying the 0-indexed socket ID if your outlet has multiple sockets, such as the [EP40](https://www.kasasmart.com/us/products/smart-plugs/kasa-smart-wi-fi-outdoor-plug).
-        - Example:
-            ```json
-            "alarmLightUrlsByPagerDutySubdomain": {
-                "mycompany": ["tcp://192.168.1.100"]
-            }
-            ```
+    1. Copy the Signing Secret to the [`pagerDutyWebhookSecrets`](#pagerdutywebhooksecrets) array.
+1. Specify the smart outlets to turn on when PagerDuty incidents are triggered by mapping your organization subdomain to the smart outlet addresses using [`alarmLightUrlsByPagerDutySubdomain`](#alarmlighturlsbypagerdutysubdomain).
 
 #### Options
 
-These go in `appsettings.json`.
+These go in `appsettings.json` in the application installation directory.
 
 ##### `alarmLightUrlsByPagerDutySubdomain`
 ```json
 { "mycompany": ["tcp://192.168.1.100", "tcp://192.168.1.101/0"] }
 ```
-Object where each key is the company name or subdomain of a PagerDuty organization, and its value is an array of URLs of Kasa smart outlets to turn on when an incident in that organization is triggered. The URL path is a 0-indexed integer that identifies which socket on the outlet to control, which can be 0 or the empty string if the outlet only has one socket. The scheme doesn't matter.
+Object that maps the PagerDuty subdomain to zero or more Kasa smart outlet addresses.
+
+- The object keys are the company names or subdomains of a PagerDuty organization. For example, if your PagerDuty web admin UI URL is `https://mycompany.pagerduty.com`, then set this key to `mycompany`.
+- The object values are arrays of URLs of Kasa smart outlets to turn on when an incident in that organization is triggered. The hostname is the IP address or domain name of your outlet, and the optional path is an integer specifying the 0-indexed socket ID if your outlet has multiple sockets, such as the [EP40](https://www.kasasmart.com/us/products/smart-plugs/kasa-smart-wi-fi-outdoor-plug). The scheme doesn't matter.
 
 ##### `kestrel.endpoints.https.url`
 ```text
-http://0.0.0.0:37374
+http://*:37374/
 ```
-URI specifying the hostname and TCP port on which to listen for HTTP requests from the EmergencyPager webhook client. Must be publicly accessible on the WAN.
+URI specifying the hostname and TCP port on which to listen for HTTP requests from the PagerDuty webhook client. Must be publicly accessible on the WAN.
 
 ##### `pagerDutyWebhookSecrets`
 ```json
 ["u565tpiQ3TnI…"]
 ```
-Array of one or more PagerDuty webhook signing secrets, which are generated by PagerDuty when you create a new webhook subscription. Only required if you want to turn on smart outlets or show toast notifications on Windows.
+Array of one or more PagerDuty webhook signing secrets, which are generated by PagerDuty when you create a new webhook subscription.
 
 ### Execution
 1. Start the service.
@@ -100,14 +94,15 @@ Array of one or more PagerDuty webhook signing secrets, which are generated by P
     - Linux with systemd: `sudo systemctl restart emergencypager.service`
 
 ### Signal Flow
-1. Something triggers an alert in <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="12" /> PagerDuty.
-1. <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="12" /> PagerDuty creates a new incident for this alert.
-1. <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="12" /> PagerDuty sends an HTTP POST request to <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=12" alt="Aldaviva" height="12" /> EmergencyPager with the newly triggered incident.
-1. <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=12" alt="Aldaviva" height="12" /> EmergencyPager sends a TCP JSON object to a Kasa smart outlet, commanding it to turn on its electrical socket.
-1. <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=12" alt="Aldaviva" height="12" /> EmergencyPager sends a WebSocket message containing the newly triggered incident to any connected <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=12" alt="Aldaviva" height="12" /> EmergencyPager.Toast clients, which show Windows toast notifications.
-1. When the Incident is eventually resolved in <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="12" /> PagerDuty, it sends another POST request to <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=12" alt="Aldaviva" height="12" /> EmergencyPager, which turns off the smart outlet and dismisses the toasts.
+1. Something triggers an alert in <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="16" /> PagerDuty.
+1. <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="16" /> PagerDuty creates a new incident for this alert.
+1. <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="16" /> PagerDuty sends an HTTP POST request to <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=16" alt="Aldaviva" height="16" /> EmergencyPager with the newly triggered incident.
+1. <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=16" alt="Aldaviva" height="16" /> EmergencyPager sends a TCP JSON object to a <img src="https://raw.githubusercontent.com/Aldaviva/Kasa/refs/heads/master/Kasa/icon.png" alt="Kasa" height="16" /> Kasa smart outlet, commanding it to turn on its electrical socket.
+1. <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=16" alt="Aldaviva" height="16" /> EmergencyPager sends a WebSocket message containing the newly triggered incident to any connected <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=16" alt="Aldaviva" height="16" /> EmergencyPager.Toast clients, which show Windows toast notifications.
+1. If a user clicks the Acknowledge or Resolve buttons on the toast, <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=16" alt="Aldaviva" height="16" /> EmergencyPager.Toast sends an HTTPS JSON API request to <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="16" /> PagerDuty as the configured user to change the state of the incident.
+1. When the Incident is eventually resolved in <img src="https://raw.githubusercontent.com/Aldaviva/PagerDuty/master/PagerDuty/icon.png" alt="PagerDuty" height="16" /> PagerDuty, it sends another POST request to <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=16" alt="Aldaviva" height="16" /> EmergencyPager, which turns off the <img src="https://raw.githubusercontent.com/Aldaviva/Kasa/refs/heads/master/Kasa/icon.png" alt="Kasa" height="16" /> Kasa smart outlets and dismisses the toasts being shown by <img src="https://gravatar.com/avatar/53218ea2108534d012156993e92f2e35?size=16" alt="Aldaviva" height="16" /> EmergencyPager.Toast.
 
-## PagerDuty Incidents → Desktop Push Notifications
+## 📟 PagerDuty Incidents → 🍞 Desktop Push Notifications
 PagerDuty makes it easy to receive push notifications for triggered incidents through their Android and iOS apps, SMS, email, and PSTN calls. However, it's not as easy to get an obvious, actionable notification if you're only on a computer while your phone isn't nearby. Phone Link and Google Messages for Web are very unreliable, and emails are easy to miss.
 
 You can solve this with a background program that runs on Windows, connects to the EmergencyPager server, and receives push notifications for triggered incidents which it shows as native Windows toasts. These are rich notifications with buttons to acknowledge or resolve the incident with one click. You can also click on the body of the toast to open the incident web page in your browser.
@@ -115,20 +110,21 @@ You can solve this with a background program that runs on Windows, connects to t
 <p align="center"><img src=".github/images/toast.png" alt="Test Service. Example incident. #55 Triggered" /></p>
 
 ### Installation
-1. Download `EmergencyPager.Toast-win-x64` from the [latest release page](https://github.com/Aldaviva/EmergencyPager/releases/latest).
+1. Download [`EmergencyPager.Toast-win-x64.zip`](https://github.com/Aldaviva/EmergencyPager/releases/latest/download/EmergencyPager.Toast-win-x64.zip) from the [latest release page](https://github.com/Aldaviva/EmergencyPager/releases/latest).
 1. Extract the EXE from the ZIP file to your hard drive.
 1. Register this program to start when you log into Windows by adding its absolute path to a new string value in the registry key `HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run`.
 
 ### Configuration
 1. Create a configuration JSON file.
     1. Save the [example configuration file](https://github.com/Aldaviva/EmergencyPager/blob/master/EmergencyPager.Toast/appsettings.json) to `%appdata%\EmergencyPager\Toast.config.json`.
-1. Set the `hubAddress` to the URL of your EmergencyPager server, with the path `/pagerduty/toasts`. *This connects the Toast client to the WebSocket server.*
+1. Set the `hubAddress` to the URL of your EmergencyPager server, with the path `/pagerduty/toasts`.
+    - *This connects the Toast client to the WebSocket server.*
 1. Replace the `myorg` key in the `pagerDutyAccountsBySubdomain` object with the subdomain of your PagerDuty organization (the part of the hostname before the `.pagerduty.com` base domain in the web interface, not including that base domain). 
-    - *This is used to determine which organization of the following information should be used for a given incident, if you are subscribed to webhooks from multiple organizations.*
+    - *This is used to determine which organization of the following information should be used for a given incident, since you can subscribe to webhooks from multiple organizations.*
 1. Set the `userId` of the organization object to the ID of your user, which is the last path segment of your PagerDuty profile page accessible from People › Users.
     - *This is used to record which user acknowledged or resolved an incident.*
 1. Set the `userEmailAddress` to your account's email address.
-    - *This prevents you from receiving toasts for incidents which are assigned to different people.*
+    - *This prevents you from receiving toasts for incidents which are assigned to other people.*
 1. Create an API access key in PagerDuty.
     1. Sign into your [PagerDuty account](https://app.pagerduty.com/).
     1. Go to Integrations › API Access Keys.
@@ -136,7 +132,7 @@ You can solve this with a background program that runs on Windows, connects to t
     1. Enter a descriptive name, and make sure **Read-only API Key** is unchecked.
     1. Click **Create Key**.
     1. Set the `apiAccessKey` in `Toast.config.json` to this new access key.
-    - *This is used to acknowledge and resolve incidents, since Events V2 Integration Keys are not able to do this because they control alerts, not incidents.*
+    - *This is used to acknowledge and resolve incidents, since Events V2 Integration Keys are not able to do so, as they only control alerts and not incidents.*
 
 ### Execution
 1. Double-click the EXE file to start it. It will run in the background and not show any UI until an incident is triggered.

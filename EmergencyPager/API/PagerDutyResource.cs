@@ -7,8 +7,8 @@ using System.Collections.Concurrent;
 
 namespace EmergencyPager.API;
 
-public class PagerDutyResource(
-    WebhookResource webhookResource,
+public sealed class PagerDutyResource(
+    IWebhookResource webhookResource,
     KasaControllerFactory kasaControllerFactory,
     ToastDispatcher toasts,
     ILogger<PagerDutyResource> logger
@@ -16,13 +16,13 @@ public class PagerDutyResource(
 
     private readonly ConcurrentDictionary<string, ValueHolder<uint>> triggeredIncidentCountByOutletId = Enumerables.CreateConcurrentDictionary<string, uint>();
 
-    public void map(WebApplication webapp) {
+    public void map(IEndpointRouteBuilder webapp) {
         webhookResource.IncidentReceived += async (_, incident) => await onIncidentReceived(incident);
         webhookResource.PingReceived     += (_, _) => logger.Info("Test webhook event received from PagerDuty");
         webapp.MapPost("/pagerduty", webhookResource.HandlePostRequest);
     }
 
-    private async Task onIncidentReceived(IncidentWebhookPayload incident) {
+    internal async Task onIncidentReceived(IncidentWebhookPayload incident) {
         if (incident.EventType is IncidentEventType.Triggered or IncidentEventType.Acknowledged or IncidentEventType.Unacknowledged or IncidentEventType.Resolved or IncidentEventType.Reopened
                 or IncidentEventType.Reassigned or IncidentEventType.Escalated && incident.AccountSubdomain is {} pagerdutySubdomain) {
 
