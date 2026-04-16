@@ -34,7 +34,7 @@ jobs:
 
     steps:
     - name: Clone
-      uses: actions/checkout@v7
+      uses: actions/checkout@v6
 
     - name: Initialize test reporting
       uses: testspace-com/setup-testspace@5fc620521eddeba83c1c0dd58f5a524adf474c93
