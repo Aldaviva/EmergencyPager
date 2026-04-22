@@ -122,9 +122,7 @@ You can solve this with a background program that runs on Windows, connects to t
 1. Replace the `myorg` key in the `pagerDutyAccountsBySubdomain` object with the subdomain of your PagerDuty organization (the part of the hostname before the `.pagerduty.com` base domain in the web interface, not including that base domain). 
     - *This is used to determine which organization of the following information should be used for a given incident, since you can subscribe to webhooks from multiple organizations.*
 1. Set the `userId` of the organization object to the ID of your user, which is the last path segment of your PagerDuty profile page accessible from People › Users.
-    - *This is used to record which user acknowledged or resolved an incident.*
-1. Set the `userEmailAddress` to your account's email address.
-    - *This prevents you from receiving toasts for incidents which are assigned to other people.*
+    - *This is used to record which user acknowledged or resolved an incident, and also prevents you from receiving toasts for incidents which are assigned to other people.*
 1. Create an API access key in PagerDuty.
     1. Sign into your [PagerDuty account](https://app.pagerduty.com/).
     1. Go to Integrations › API Access Keys.

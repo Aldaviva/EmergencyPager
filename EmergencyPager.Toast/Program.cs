@@ -31,15 +31,15 @@ if (!isToastCallback) {
         .AddSingleton(provider => new HubConnectionBuilder()
             .WithUrl(provider.GetRequiredService<IOptions<Configuration>>().Value.hubAddress)
             .WithAutomaticReconnect(new DelayRetry(Delays.Exponential(TimeSpan.FromSeconds(1), max: TimeSpan.FromMinutes(2))))
-            .ConfigureLogging(builder => {
-                builder.AddConfiguration(appBuilder.Configuration.GetSection("Logging"));
-                builder.AddUnfuckedConsole();
+            .ConfigureLogging(hubBuilder => {
+                hubBuilder.AddConfiguration(appBuilder.Configuration.GetSection("Logging"));
+                hubBuilder.AddUnfuckedConsole();
                 // Use the same ConsoleFormatter instance as the outer context so the stateful automatic column width is the same, instead of using two instances where the columns would jump around depending on the source
-                builder.Services.Remove(builder.Services.First(service => service.ImplementationType == typeof(UnfuckedConsoleFormatter)));
-                builder.Services.AddSingleton<ConsoleFormatter>(_ => provider.GetServices<ConsoleFormatter>().OfType<UnfuckedConsoleFormatter>().First());
+                hubBuilder.Services.Remove(hubBuilder.Services.First(service => service.ImplementationType == typeof(UnfuckedConsoleFormatter)));
+                hubBuilder.Services.AddSingleton<ConsoleFormatter>(_ => provider.GetServices<ConsoleFormatter>().OfType<UnfuckedConsoleFormatter>().First());
             })
             .Build())
-        .AddSingleton<HubClient>();
+        .AddSingleton<IHubClient, HubClient>();
 }
 
 using IHost app = appBuilder.Build();
@@ -55,8 +55,20 @@ ToastNotificationManagerCompat.OnActivated += async e => {
 };
 
 if (!isToastCallback) {
+    PagerDutyRestClientFactory pagerDutyClientFactory = app.Services.GetRequiredService<PagerDutyRestClientFactory>();
+    IOptions<Configuration>    config                 = app.Services.GetRequiredService<IOptions<Configuration>>();
+
+    foreach (PagerDutyAccount account in config.Value.pagerDutyAccountsBySubdomain.Values) {
+        PagerDutyUser pagerDutyUser = await pagerDutyClientFactory.createPagerDutyClient(account)
+            .Path("users/{id}")
+            .ResolveTemplate("id", account.userId)
+            .Get<PagerDutyUser>(cts.Token);
+
+        account.userEmailAddress = pagerDutyUser.email;
+    }
+
     HubConnection hubConnection = app.Services.GetRequiredService<HubConnection>();
-    HubClient     hubClient     = app.Services.GetRequiredService<HubClient>();
+    IHubClient    hubClient     = app.Services.GetRequiredService<IHubClient>();
 
     hubClient.incidentUpdated += toastHandler.onIncidentUpdated;
     hubConnection.Closed += e => {

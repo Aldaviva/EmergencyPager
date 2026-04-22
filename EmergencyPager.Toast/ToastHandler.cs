@@ -4,10 +4,8 @@ using EmergencyPager.Toast.PagerDuty;
 using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Pager.Duty.Webhooks.Requests;
-using System.Net.Http.Json;
 using System.Reflection;
-using System.Text.Json;
-using Unfucked.HTTP.Config;
+using Unfucked.HTTP.Serialization;
 
 namespace EmergencyPager.Toast;
 
@@ -89,17 +87,16 @@ public sealed class ToastHandlerImpl(PagerDutyRestClientFactory pagerDutyClientF
 
         if (getPagerDutyAccount(accountSubdomain) is not {} pagerDutyAccount) return;
 
-        IncidentStatus newStatus = action switch {
+        IncidentUpdate incidentUpdate = new(action switch {
             ButtonAction.ACKNOWLEDGE => IncidentStatus.Acknowledged,
             ButtonAction.RESOLVE     => IncidentStatus.Resolved
-        };
-        IncidentPayload requestBody = new(new IncidentUpdate(newStatus));
+        });
 
         if (pagerDutyClientFactory.createPagerDutyClient(pagerDutyAccount) is {} client) {
-            logger.Info("Setting incident {id} to {newStatus}", incidentId, newStatus);
+            logger.Info("Setting incident {id} to {newStatus}", incidentId, incidentUpdate.status);
             using HttpResponseMessage _ = await client.Path("incidents/{id}")
                 .ResolveTemplate("id", incidentId)
-                .Put(JsonContent.Create(requestBody, options: client.Property(PropertyKey.JsonSerializerOptions, out JsonSerializerOptions? jsonOptions) ? jsonOptions : null));
+                .Put(Entity.Json(new IncidentPayload(incidentUpdate)));
         }
     }
 

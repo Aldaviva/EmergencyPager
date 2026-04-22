@@ -35,13 +35,13 @@
       },
       "Microsoft.Extensions.Hosting.WindowsServices": {
         "type": "Direct",
-        "requested": "[10.0.6, )",
-        "resolved": "10.0.6",
-        "contentHash": "2VjWLfuZODSSLANosPNWXfjDXi5gh0R+Qq5JxzUzpjm3ZAU+mqHDcYFfMTEgVAyWwa58k9tMq5AA9R7NHHc/hg==",
+        "requested": "[10.0.7, )",
+        "resolved": "10.0.7",
+        "contentHash": "/qRA+VApG26QadEx1XfHwbqTs0LG0//GEBS30I2RMVJU6f60zKWMTg4l9wziPqr/bU1qvQVgVNFj2mZO4Gigtw==",
         "dependencies": {
-          "Microsoft.Extensions.Hosting": "10.0.6",
-          "Microsoft.Extensions.Logging.EventLog": "10.0.6",
-          "System.ServiceProcess.ServiceController": "10.0.6"
+          "Microsoft.Extensions.Hosting": "10.0.7",
+          "Microsoft.Extensions.Logging.EventLog": "10.0.7",
+          "System.ServiceProcess.ServiceController": "10.0.7"
         }
       },
       "PagerDuty.Webhooks": {
@@ -393,10 +393,10 @@
       },
       "System.ServiceProcess.ServiceController": {
         "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "b/mv9+xpnWhlblcxyOJHyesXwpnczOGLfR5VZ+eWJJW7GBbudGyOFwKZK45SS0iNP9Wk2kB1ZwvKDvscauKQ5A==",
+        "resolved": "10.0.7",
+        "contentHash": "c8TTpzLzKjXZv4iDM4JErbg9rHcmIvZnW376W9qy3vlyO86rLX1XKEmyLxEBDUDrUtdcdThtqlnenxoYdH35hA==",
         "dependencies": {
-          "System.Diagnostics.EventLog": "10.0.6"
+          "System.Diagnostics.EventLog": "10.0.7"
         }
       },
       "Unfucked": {
@@ -427,10 +427,10 @@
       },
       "System.ServiceProcess.ServiceController": {
         "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "b/mv9+xpnWhlblcxyOJHyesXwpnczOGLfR5VZ+eWJJW7GBbudGyOFwKZK45SS0iNP9Wk2kB1ZwvKDvscauKQ5A==",
+        "resolved": "10.0.7",
+        "contentHash": "c8TTpzLzKjXZv4iDM4JErbg9rHcmIvZnW376W9qy3vlyO86rLX1XKEmyLxEBDUDrUtdcdThtqlnenxoYdH35hA==",
         "dependencies": {
-          "System.Diagnostics.EventLog": "10.0.6"
+          "System.Diagnostics.EventLog": "10.0.7"
         }
       }
     },
@@ -450,10 +450,10 @@
       },
       "System.ServiceProcess.ServiceController": {
         "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "b/mv9+xpnWhlblcxyOJHyesXwpnczOGLfR5VZ+eWJJW7GBbudGyOFwKZK45SS0iNP9Wk2kB1ZwvKDvscauKQ5A==",
+        "resolved": "10.0.7",
+        "contentHash": "c8TTpzLzKjXZv4iDM4JErbg9rHcmIvZnW376W9qy3vlyO86rLX1XKEmyLxEBDUDrUtdcdThtqlnenxoYdH35hA==",
         "dependencies": {
-          "System.Diagnostics.EventLog": "10.0.6"
+          "System.Diagnostics.EventLog": "10.0.7"
         }
       }
     },
@@ -473,10 +473,10 @@
       },
       "System.ServiceProcess.ServiceController": {
         "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "b/mv9+xpnWhlblcxyOJHyesXwpnczOGLfR5VZ+eWJJW7GBbudGyOFwKZK45SS0iNP9Wk2kB1ZwvKDvscauKQ5A==",
+        "resolved": "10.0.7",
+        "contentHash": "c8TTpzLzKjXZv4iDM4JErbg9rHcmIvZnW376W9qy3vlyO86rLX1XKEmyLxEBDUDrUtdcdThtqlnenxoYdH35hA==",
         "dependencies": {
-          "System.Diagnostics.EventLog": "10.0.6"
+          "System.Diagnostics.EventLog": "10.0.7"
         }
       }
     },
@@ -496,10 +496,10 @@
       },
       "System.ServiceProcess.ServiceController": {
         "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "b/mv9+xpnWhlblcxyOJHyesXwpnczOGLfR5VZ+eWJJW7GBbudGyOFwKZK45SS0iNP9Wk2kB1ZwvKDvscauKQ5A==",
+        "resolved": "10.0.7",
+        "contentHash": "c8TTpzLzKjXZv4iDM4JErbg9rHcmIvZnW376W9qy3vlyO86rLX1XKEmyLxEBDUDrUtdcdThtqlnenxoYdH35hA==",
         "dependencies": {
-          "System.Diagnostics.EventLog": "10.0.6"
+          "System.Diagnostics.EventLog": "10.0.7"
         }
       }
     },
@@ -519,10 +519,10 @@
       },
       "System.ServiceProcess.ServiceController": {
         "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "b/mv9+xpnWhlblcxyOJHyesXwpnczOGLfR5VZ+eWJJW7GBbudGyOFwKZK45SS0iNP9Wk2kB1ZwvKDvscauKQ5A==",
+        "resolved": "10.0.7",
+        "contentHash": "c8TTpzLzKjXZv4iDM4JErbg9rHcmIvZnW376W9qy3vlyO86rLX1XKEmyLxEBDUDrUtdcdThtqlnenxoYdH35hA==",
         "dependencies": {
-          "System.Diagnostics.EventLog": "10.0.6"
+          "System.Diagnostics.EventLog": "10.0.7"
         }
       }
     }
