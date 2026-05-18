@@ -67,4 +67,54 @@ public class PagerDutyResourceTest {
         A.CallTo(() => toasts.incidentUpdated(incident)).MustHaveHappenedOnceExactly();
     }
 
+    [Fact]
+    public async Task preventNegativeOpenIncidentCount() {
+        var                        kasa           = A.Fake<IKasaOutlet>();
+        KasaSingleOutletController kasaController = new(kasa);
+        PagerDutyResource          resource       = new(A.Fake<IWebhookResource>(), _ => [kasaController], toasts, LOGGER);
+        var                        kasaSystem     = A.Fake<IKasaOutletBase.ISystemCommands.ISingleSocket>();
+        bool                       isSocketOn     = false;
+
+        A.CallTo(() => kasa.System).Returns(kasaSystem);
+        A.CallTo(() => kasaSystem.SetSocketOn(A<bool>._)).Invokes((bool setSocketOn) => isSocketOn = setSocketOn);
+
+        isSocketOn.Should().BeFalse("program just started");
+
+        await resource.onIncidentReceived(new IncidentWebhookPayload {
+            Id             = "Q2RX5WDDT1MPAB",
+            Metadata       = new WebhookPayloadMetadata { EventType = "incident.triggered" },
+            HtmlUrl        = new Uri("https://mysubdomain.pagerduty.com/incidents/ABC123"),
+            Status         = IncidentStatus.Triggered,
+            IncidentNumber = 456,
+            Title          = "Test 1"
+        });
+
+        isSocketOn.Should().BeTrue("turned on for triggered incident");
+
+        await resource.onIncidentReceived(new IncidentWebhookPayload {
+            Id             = "Q2RX5WDDT1MPAB",
+            Metadata       = new WebhookPayloadMetadata { EventType = "incident.acknowledged" },
+            HtmlUrl        = new Uri("https://mysubdomain.pagerduty.com/incidents/ABC123"),
+            Status         = IncidentStatus.Acknowledged,
+            IncidentNumber = 456,
+            Title          = "Test 1"
+        });
+
+        isSocketOn.Should().BeFalse("turned off for acknowledged incident");
+
+        await resource.onIncidentReceived(new IncidentWebhookPayload {
+            Id             = "Q2RX5WDDT1MPAB",
+            Metadata       = new WebhookPayloadMetadata { EventType = "incident.resolved" },
+            HtmlUrl        = new Uri("https://mysubdomain.pagerduty.com/incidents/ABC123"),
+            Status         = IncidentStatus.Resolved,
+            IncidentNumber = 456,
+            Title          = "Test 1"
+        });
+
+        isSocketOn.Should().BeFalse("stayed off for resolved incident");
+
+        A.CallTo(() => kasaSystem.SetSocketOn(true)).MustHaveHappenedOnceExactly()
+            .Then(A.CallTo(() => kasaSystem.SetSocketOn(false)).MustHaveHappenedTwiceExactly());
+    }
+
 }

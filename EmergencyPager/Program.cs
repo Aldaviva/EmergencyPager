@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 using Options = Kasa.Options;
 
 BomSquad.DefuseUtf8Bom();
-Version.GetProgramVersion(true);
+Version.PrintProgramVersionAndExitIfRequested();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 

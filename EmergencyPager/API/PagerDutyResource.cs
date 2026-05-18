@@ -3,7 +3,6 @@ using EmergencyPager.Data;
 using Kasa;
 using Pager.Duty.Webhooks;
 using Pager.Duty.Webhooks.Requests;
-using System.Collections.Concurrent;
 
 namespace EmergencyPager.API;
 
@@ -14,7 +13,7 @@ public sealed class PagerDutyResource(
     ILogger<PagerDutyResource> logger
 ): WebResource {
 
-    private readonly ConcurrentDictionary<string, ValueHolder<int>> triggeredIncidentCountByOutletId = Enumerables.CreateConcurrentDictionary<string, int>();
+    private readonly IDictionary<string, ISet<string>> triggeredIncidentIdsByOutletId = new Dictionary<string, ISet<string>>();
 
     public void map(IEndpointRouteBuilder webapp) {
         webhookResource.IncidentReceived += async (_, incident) => await onIncidentReceived(incident);
@@ -30,22 +29,26 @@ public sealed class PagerDutyResource(
 
             foreach (KasaController kasaController in kasaControllerFactory(pagerdutySubdomain)) {
                 using (kasaController) {
-                    string incidentCountKey = kasaController.id;
-                    triggeredIncidentCountByOutletId.TryAdd(incidentCountKey, new ValueHolder<int>(0));
-                    int triggeredIncidentCountForOutlet = (isTriggered
-                        ? triggeredIncidentCountByOutletId.AtomicIncrement(incidentCountKey)
-                        : triggeredIncidentCountByOutletId.AtomicDecrement(incidentCountKey))!.Value;
-                    if (triggeredIncidentCountForOutlet < 0) {
-                        // If this program was restarted during an outage, the triggered incident count can go from 0 to negative when an incident is resolved, so set it back to 0.
-                        triggeredIncidentCountByOutletId.AtomicAdd(incidentCountKey, -triggeredIncidentCountForOutlet);
+                    int triggeredIncidentCountForOutlet;
+                    lock (triggeredIncidentIdsByOutletId) {
+                        ISet<string> triggeredIncidentsForOutlet = triggeredIncidentIdsByOutletId.GetOrAdd(kasaController.id, static _ => new HashSet<string>(), out _);
+
+                        if (isTriggered) {
+                            triggeredIncidentsForOutlet.Add(incident.Id);
+                        } else {
+                            triggeredIncidentsForOutlet.Remove(incident.Id);
+                        }
+
+                        triggeredIncidentCountForOutlet = triggeredIncidentsForOutlet.Count;
                     }
+
                     bool turnOn = triggeredIncidentCountForOutlet != 0;
 
                     if (isTriggered || !turnOn) {
                         logger.Info("PagerDuty incident #{num:D} \"{title}\" is {status}", incident.IncidentNumber, incident.Title, incident.Status);
                     } else {
                         logger.Info("PagerDuty incident #{num:D} \"{title}\" is {status}, but leaving outlets on because {otherCount} other incidents are still triggered", incident.IncidentNumber,
-                            incident.Title, incident.Status, triggeredIncidentCountForOutlet - 1);
+                            incident.Title, incident.Status, triggeredIncidentCountForOutlet);
                     }
 
                     try {
