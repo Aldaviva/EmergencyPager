@@ -71,11 +71,11 @@
       },
       "Unfucked.DI": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.16, )",
-        "resolved": "0.0.1-beta.16",
-        "contentHash": "HvPaEc/Vsd111hcvl9Pv/6nrJt6XZjvKG2WKpoYHM+/vB56ykWAsjf2pn2Lewj/ZWBOEi/iMSKMLD9YZEuNlWg==",
+        "requested": "[0.0.1-beta.17, )",
+        "resolved": "0.0.1-beta.17",
+        "contentHash": "looboubXUilAm2EH9vT1a0v2PxhpNJ/Qv9SBJKx1ehRl0/5qWcobwF5oxSS7/jOFe3yT5mQKou1Jk2IB7bXNHw==",
         "dependencies": {
-          "Unfucked": "0.0.1-beta.40"
+          "Unfucked": "0.0.1-beta.45"
         }
       },
       "Unfucked.HTTP": {
