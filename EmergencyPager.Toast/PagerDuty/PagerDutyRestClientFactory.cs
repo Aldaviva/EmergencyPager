@@ -18,7 +18,7 @@ public interface PagerDutyRestClientFactory {
  * https://developer.pagerduty.com/docs/rest-api-overview
  * https://developer.pagerduty.com/docs/authentication
  */
-public sealed class PagerDutyRestClientFactoryImpl(HttpClient http): PagerDutyRestClientFactory {
+public sealed class PagerDutyRestClientFactoryImpl(UnfuckedHttpClient http): PagerDutyRestClientFactory {
 
     private static readonly Uri PAGERDUTY_API_BASE = new("https://api.pagerduty.com");
 
