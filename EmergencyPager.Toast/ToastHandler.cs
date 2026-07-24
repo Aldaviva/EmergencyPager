@@ -5,6 +5,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Pager.Duty.Webhooks.Requests;
 using System.Reflection;
+using System.Text;
+using Unfucked.HTTP.Exceptions;
 using Unfucked.HTTP.Serialization;
 
 namespace EmergencyPager.Toast;
@@ -13,7 +15,7 @@ public interface ToastHandler {
 
     Task onIncidentUpdated(IHubClient sender, IncidentWebhookPayload incident);
 
-    Task onToastInteraction(ToastNotificationActivatedEventArgsCompat e);
+    Task onToastInteraction(ToastArguments e);
 
 }
 
@@ -79,24 +81,30 @@ public sealed class ToastHandlerImpl(PagerDutyRestClientFactory pagerDutyClientF
     /*
      * https://developer.pagerduty.com/api-reference/8a0e1aa2ec666-update-an-incident
      */
-    public async Task onToastInteraction(ToastNotificationActivatedEventArgsCompat e) {
-        ToastArguments args             = ToastArguments.Parse(e.Argument);
+    public async Task onToastInteraction(ToastArguments args) {
         string         incidentId       = args.Get(TOAST_ARG_INCIDENT_ID);
         string         accountSubdomain = args.Get(TOAST_ARG_ACCOUNT_SUBDOMAIN);
         ButtonAction   action           = args.GetEnum<ButtonAction>("action");
-
-        if (getPagerDutyAccount(accountSubdomain) is not {} pagerDutyAccount) return;
-
         IncidentUpdate incidentUpdate = new(action switch {
             ButtonAction.ACKNOWLEDGE => IncidentStatus.Acknowledged,
             ButtonAction.RESOLVE     => IncidentStatus.Resolved
         });
 
-        if (pagerDutyClientFactory.createPagerDutyClient(pagerDutyAccount) is {} client) {
+        if (getPagerDutyAccount(accountSubdomain) is {} pagerDutyAccount && pagerDutyClientFactory.createPagerDutyClient(pagerDutyAccount) is {} client) {
             logger.Info("Setting incident {id} to {newStatus}", incidentId, incidentUpdate.status);
-            using HttpResponseMessage _ = await client.Path("incidents/{id}")
-                .ResolveTemplate("id", incidentId)
-                .Put(Entity.Json(new IncidentPayload(incidentUpdate)));
+            try {
+                string response = await client.Path("incidents/{id}")
+                    .ResolveTemplate("id", incidentId)
+                    .Put<string>(Entity.Json(new IncidentPayload(incidentUpdate)));
+                logger.Debug("PagerDuty API responded with {body}", response);
+            } catch (WebApplicationException exception) {
+                logger.Error("PagerDuty API responded to {url} with {status} {body}", exception.RequestUrl, exception.StatusCode,
+                    exception.ResponseBody is {} body ? Encoding.UTF8.GetString(body.Span) : "");
+            } catch (ProcessingException exception) {
+                logger.Error(exception, "Processing exception while communicating with PagerDuty API");
+            }
+        } else {
+            logger.Error("No configuration for PagerDuty account {subdomain}", accountSubdomain);
         }
     }
 
@@ -124,8 +132,7 @@ public sealed class ToastHandlerImpl(PagerDutyRestClientFactory pagerDutyClientF
 
     private enum ButtonAction {
 
-        ACKNOWLEDGE = 0,
-        RESOLVE     = 1
+        ACKNOWLEDGE = 0, RESOLVE = 1
 
     }
 

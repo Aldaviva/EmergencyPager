@@ -13,14 +13,14 @@ When an alert is triggered in [PagerDuty](https://www.pagerduty.com), turn on [K
 <!-- MarkdownTOC autolink="true" bracket="round" autoanchor="false" levels="1,2,3,4" bullets="-,1.,-,-" -->
 
 - [Prerequisites](#prerequisites)
-- [📟 PagerDuty Incidents → 🚨 Spinning Red Light](#%F0%9F%93%9F-pagerduty-incidents-%E2%86%92-%F0%9F%9A%A8-spinning-red-light)
+- [📟 PagerDuty Incidents → 🚨 Spinning Red Light](#-pagerduty-incidents---spinning-red-light)
     1. [Installation](#installation)
     1. [Configuration](#configuration)
         - [Procedure](#procedure)
         - [Options](#options)
     1. [Execution](#execution)
     1. [Signal Flow](#signal-flow)
-- [📟 PagerDuty Incidents → 🍞 Desktop Push Notifications](#%F0%9F%93%9F-pagerduty-incidents-%E2%86%92-%F0%9F%8D%9E-desktop-push-notifications)
+- [📟 PagerDuty Incidents → 🍞 Desktop Push Notifications](#-pagerduty-incidents---desktop-push-notifications)
     1. [Installation](#installation-1)
     1. [Configuration](#configuration-1)
     1. [Execution](#execution-1)

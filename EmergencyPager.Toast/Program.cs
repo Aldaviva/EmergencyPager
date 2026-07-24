@@ -40,7 +40,7 @@ if (!isToastCallback) {
                 hubBuilder.AddConfiguration(appBuilder.Configuration.GetSection("Logging"));
                 hubBuilder.AddUnfuckedConsole();
                 // Use the same ConsoleFormatter instance as the outer context so the stateful automatic column width is the same, instead of using two instances where the columns would jump around depending on the source
-                hubBuilder.Services.Remove(hubBuilder.Services.First(service => service.ImplementationType == typeof(UnfuckedConsoleFormatter)));
+                hubBuilder.Services.Remove(hubBuilder.Services.First(static service => service.ImplementationType == typeof(UnfuckedConsoleFormatter)));
                 hubBuilder.Services.AddSingleton<ConsoleFormatter>(_ => provider.GetServices<ConsoleFormatter>().OfType<UnfuckedConsoleFormatter>().First());
             })
             .Build())
@@ -53,7 +53,7 @@ var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 ToastHandler toastHandler = app.Services.GetRequiredService<ToastHandler>();
 ToastNotificationManagerCompat.OnActivated += async e => {
-    await toastHandler.onToastInteraction(e);
+    await toastHandler.onToastInteraction(ToastArguments.Parse(e.Argument));
     if (isToastCallback) {
         await cts.CancelAsync();
     }
@@ -61,19 +61,15 @@ ToastNotificationManagerCompat.OnActivated += async e => {
 
 if (!isToastCallback) {
     PagerDutyRestClientFactory pagerDutyClientFactory = app.Services.GetRequiredService<PagerDutyRestClientFactory>();
-    IOptions<Configuration>    config                 = app.Services.GetRequiredService<IOptions<Configuration>>();
-    RetryOptions retryOptions = new() {
-        Delay             = retryDelay,
-        CancellationToken = cts.Token
-    };
+    Configuration              config                 = app.Services.GetRequiredService<IOptions<Configuration>>().Value;
+    RetryOptions               retryOptions           = new() { Delay = retryDelay, CancellationToken = cts.Token };
 
-    foreach (PagerDutyAccount account in config.Value.pagerDutyAccountsBySubdomain.Values.Where(account => account.userEmailAddress == null)) {
+    foreach (PagerDutyAccount account in config.pagerDutyAccountsBySubdomain.Values.Where(static account => account.userEmailAddress is null)) {
         await Retrier.Attempt(async _ => {
             account.userEmailAddress = (await pagerDutyClientFactory.createPagerDutyClient(account)
-                    .Path("users/{id}")
-                    .ResolveTemplate("id", account.userId)
-                    .Get<PagerDutyUser>(cts.Token))
-                .email;
+                .Path("users/{id}")
+                .ResolveTemplate("id", account.userId)
+                .Get<PagerDutyUser>(cts.Token)).email;
         }, retryOptions);
     }
 
@@ -87,12 +83,12 @@ if (!isToastCallback) {
         }
         return Task.CompletedTask;
     };
-    logger.Debug("Connecting to eventing socket");
+    logger.Debug("Connecting to eventing socket on {url}", config.hubAddress);
     await Retrier.Attempt(async _ => await hubConnection.StartAsync(cts.Token), retryOptions with {
         AfterFailure = (e, _) => logger.Warn(e, "Connection to eventing socket failed, will retry"),
         BeforeRetry = (_, retryNumber) => logger.Debug("Connecting to eventing socket (attempt #{attempt:N0})", retryNumber + 1),
     });
-    logger.Info("Waiting for socket events about incident updates");
+    logger.Info("Connected, waiting for socket events about incident updates");
 }
 
 using RuntimeUpgradeNotifier runtimeUpgrades = new() {
