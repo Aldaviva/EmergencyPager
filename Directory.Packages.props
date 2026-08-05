@@ -17,9 +17,9 @@
         <PackageVersion Version="0.0.10" Include="SignalRClientGenerator" />
         <PackageVersion Version="10.0.10" Include="System.Drawing.Common" />
         <PackageVersion Version="3.0.0-beta6" Include="ThrottleDebounce" />
-        <PackageVersion Version="0.0.1-beta.49" Include="Unfucked" />
+        <PackageVersion Version="0.0.1-beta.50" Include="Unfucked" />
         <PackageVersion Version="0.0.1-beta.18" Include="Unfucked.DI" />
-        <PackageVersion Version="0.0.1-beta.32" Include="Unfucked.HTTP" />
+        <PackageVersion Version="0.0.1-beta.33" Include="Unfucked.HTTP" />
     </ItemGroup>
     <ItemGroup Label="Provided by runtime to EmergencyPager" Condition="'$(_IsPublishing)' == 'true'">
         <PackageVersion Version="10.0.10" Include="Microsoft.Extensions.Configuration" />
