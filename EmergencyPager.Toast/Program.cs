@@ -16,7 +16,7 @@ using Unfucked.HTTP;
 Version.PrintProgramVersionAndExitIfRequested();
 
 using CancellationTokenSource cts        = new CancellationTokenSource().CancelOnCtrlC();
-Func<long, TimeSpan>?         retryDelay = null;
+Func<long, TimeSpan>          retryDelay = Delays.Exponential(TimeSpan.FromSeconds(1), max: TimeSpan.FromMinutes(5));
 
 HostApplicationBuilder appBuilder = Host.CreateApplicationBuilder(args);
 
@@ -31,7 +31,6 @@ appBuilder.Services
 
 bool isToastCallback = ToastNotificationManagerCompat.WasCurrentProcessToastActivated();
 if (!isToastCallback) {
-    retryDelay = Delays.Exponential(TimeSpan.FromSeconds(1), max: TimeSpan.FromMinutes(5));
     appBuilder.Services
         .AddSingleton(provider => new HubConnectionBuilder()
             .WithUrl(provider.GetRequiredService<IOptions<Configuration>>().Value.hubAddress)
@@ -49,8 +48,6 @@ if (!isToastCallback) {
 
 using IHost app = appBuilder.Build();
 
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
 ToastHandler toastHandler = app.Services.GetRequiredService<ToastHandler>();
 ToastNotificationManagerCompat.OnActivated += async e => {
     await toastHandler.onToastInteraction(ToastArguments.Parse(e.Argument));
@@ -60,31 +57,20 @@ ToastNotificationManagerCompat.OnActivated += async e => {
 };
 
 if (!isToastCallback) {
-    PagerDutyRestClientFactory pagerDutyClientFactory = app.Services.GetRequiredService<PagerDutyRestClientFactory>();
-    Configuration              config                 = app.Services.GetRequiredService<IOptions<Configuration>>().Value;
-    RetryOptions               retryOptions           = new() { Delay = retryDelay, CancellationToken = cts.Token };
-
-    foreach (PagerDutyAccount account in config.pagerDutyAccountsBySubdomain.Values.Where(static account => account.userEmailAddress is null)) {
-        await Retrier.Attempt(async _ => {
-            account.userEmailAddress = (await pagerDutyClientFactory.createPagerDutyClient(account)
-                .Path("users/{id}")
-                .ResolveTemplate("id", account.userId)
-                .Get<PagerDutyUser>(cts.Token)).email;
-        }, retryOptions);
-    }
-
-    HubConnection hubConnection = app.Services.GetRequiredService<HubConnection>();
-    IHubClient    hubClient     = app.Services.GetRequiredService<IHubClient>();
+    var           logger       = app.Services.GetRequiredService<ILogger<Program>>();
+    Configuration config       = app.Services.GetRequiredService<IOptions<Configuration>>().Value;
+    RetryOptions  retryOptions = new() { Delay = retryDelay, CancellationToken = cts.Token };
+    IHubClient    hubClient    = app.Services.GetRequiredService<IHubClient>();
 
     hubClient.incidentUpdated += toastHandler.onIncidentUpdated;
-    hubConnection.Closed += e => {
+    hubClient.HubConnection.Closed += e => {
         if (!cts.IsCancellationRequested) {
             logger.Warn("Connection to eventing socket closed: {msg}", e?.Message);
         }
         return Task.CompletedTask;
     };
     logger.Debug("Connecting to eventing socket on {url}", config.hubAddress);
-    await Retrier.Attempt(async _ => await hubConnection.StartAsync(cts.Token), retryOptions with {
+    await Retrier.Attempt(async _ => await hubClient.HubConnection.StartAsync(cts.Token), retryOptions with {
         AfterFailure = (e, _) => logger.Warn(e, "Connection to eventing socket failed, will retry"),
         BeforeRetry = (_, retryNumber) => logger.Debug("Connecting to eventing socket (attempt #{attempt:N0})", retryNumber + 1),
     });
@@ -98,6 +84,5 @@ using RuntimeUpgradeNotifier runtimeUpgrades = new() {
 };
 
 await app.RunAsync(cts.Token);
-logger.Debug("Shutting down");
 
 ToastNotificationManagerCompat.Uninstall();

@@ -5,13 +5,13 @@ public sealed class Configuration {
     public required Uri hubAddress { get; init; }
     public required IReadOnlyDictionary<string, PagerDutyAccount> pagerDutyAccountsBySubdomain { get; init; }
 
-}
-
-public record PagerDutyAccount(string apiAccessKey, string userId, string? userEmailAddress) {
-
-    public string? userEmailAddress { get; set; } = userEmailAddress;
+    public override string ToString() =>
+        $"{nameof(hubAddress)}: {hubAddress}, {nameof(pagerDutyAccountsBySubdomain)}: {pagerDutyAccountsBySubdomain.Select(pair => $"{pair.Key}={pair.Value}").Join(", ")}";
 
 }
 
-/// <seealso href="https://developer.pagerduty.com/api-reference/2395ca1feb25e-get-a-user"/>
-internal record PagerDutyUser(string id, string email);
+public record PagerDutyAccount(string apiAccessKey, string userId, string userEmailAddress) {
+
+    public override string ToString() => $"{nameof(userEmailAddress)}: {userEmailAddress}, {nameof(apiAccessKey)}: {apiAccessKey}, {nameof(userId)}: {userId}";
+
+}

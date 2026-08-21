@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <ProjectVersion>5.0.3</ProjectVersion>
+        <ProjectVersion>5.0.4</ProjectVersion>
         <NoWarn>$(NoWarn);NU1507</NoWarn>
     </PropertyGroup>
 </Project>

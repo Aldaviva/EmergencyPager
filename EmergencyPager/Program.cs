@@ -27,7 +27,7 @@ builder.Services
             provider.GetRequiredService<IOptions<Configuration>>().Value.alarmLightUrlsByPagerDutySubdomain;
         Options kasaOptions = new() { LoggerFactory = provider.GetService<ILoggerFactory>() };
         return pagerdutySubdomain => alarmLightUrlsByPagerDutySubdomain?.GetValueOrDefault(pagerdutySubdomain)?
-            .Select<string, KasaController>(url => new Uri(url, UriKind.Absolute) is var uri && uri.Segments.ElementAtOrDefault(1) is {} s && int.TryParse(s.TrimEnd('/'), out int socketId)
+            .Select<string, KasaController>(url => new Uri(url, UriKind.Absolute) is var uri && uri.Path.ElementAtOrDefault(0) is {} s && int.TryParse(s, out int socketId)
                 ? new KasaMultiOutletController(new MultiSocketKasaOutlet(uri.Host, kasaOptions), socketId)
                 : new KasaSingleOutletController(new KasaOutlet(uri.Host, kasaOptions))) ?? [];
     })
