@@ -17,7 +17,7 @@
     <PackageVersion Version="0.0.10" Include="SignalRClientGenerator" />
     <PackageVersion Version="10.0.12" Include="System.Drawing.Common" />
     <PackageVersion Version="3.0.0-beta6" Include="ThrottleDebounce" />
-    <PackageVersion Version="0.0.1-beta.52" Include="Unfucked" />
+    <PackageVersion Version="0.0.1-beta.53" Include="Unfucked" />
     <PackageVersion Version="0.0.1-beta.19" Include="Unfucked.DI" />
     <PackageVersion Version="0.0.1-beta.33" Include="Unfucked.HTTP" />
   </ItemGroup>
