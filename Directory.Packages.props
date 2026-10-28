@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Version="0.3.0" Include="Bom.Squad" />
-    <PackageVersion Version="4.3.0" Include="IPNetwork2" />
+    <PackageVersion Version="5.0.1" Include="IPNetwork2" />
     <PackageVersion Version="1.1.0" Include="Kasa" />
     <PackageVersion Version="10.0.12" Include="Microsoft.AspNetCore.SignalR.Client" />
     <PackageVersion Version="10.0.12" Include="Microsoft.Extensions.Hosting" />
